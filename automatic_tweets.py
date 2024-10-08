@@ -5,7 +5,7 @@ Reason: Im just geeking out at this point. im also getting ready to work on that
 """
 
 # REQUIRED MODULES
-import schedule
+# import schedule
 import time
 import tweepy
 import requests as rq
@@ -32,8 +32,12 @@ def blacklistFlags():
     # List of blacklisted flags
     blacklist = ["nsfw", "religious", "political", "racist", "sexist", "explicit"]
     chosenBlackList = []
-    for i range(1, 3):
-        chosenBlackList.append(blacklist[random.randint(len(blacklist))])
+    for i in range(1, 3):
+        chosenBlackList.append(
+            blacklist[
+                random.randint(
+                    len(
+                        blacklist))])
 
 
 
@@ -74,15 +78,15 @@ def blacklistFlags():
 
 
 # Schedule posts
-schedule.every().day.at("08:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("10:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("12:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("14:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("16:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("18:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("20:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("22:00").do(post_to_twitter, content = getRandomJoke())
-schedule.every().day.at("00:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("08:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("10:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("12:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("14:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("16:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("18:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("20:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("22:00").do(post_to_twitter, content = getRandomJoke())
+# schedule.every().day.at("00:00").do(post_to_twitter, content = getRandomJoke())
 
 while True:
     print("Bot running...")
