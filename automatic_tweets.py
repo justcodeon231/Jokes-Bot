@@ -28,8 +28,17 @@ def getRandomJoke():
     # Select random category
     randomCategory = random.choice(categories)
 
+def blacklistFlags():
+    # List of blacklisted flags
+    blacklist = ["nsfw", "religious", "political", "racist", "sexist", "explicit"]
+    chosenBlackList = []
+    for i range(1, 3):
+        chosenBlackList.append(blacklist[random.randint(len(blacklist))])
+
+
+
     # API Endpoint Handling
-    url = None
+    url = f"https://v2.jokeapi.dev/joke/{randomCategory}?blacklistFlags=nsfw,religious,political,racist,sexist,explicit"
 
     try:
         # Fetch joke json (GET)
