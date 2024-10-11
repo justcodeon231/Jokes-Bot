@@ -1,94 +1,63 @@
 """
 Author: liicodex
 Date: 28 July 2024
-Reason: Im just geeking out at this point. im also getting ready to work on that webscraper.
+Reason: Simplified and improved version of the joke bot.
 """
 
-# REQUIRED MODULES
-# import schedule
 import time
 import tweepy
-import requests as rq
+import requests
 import random
 
-# THE LOGIC FUNCTIONS
-def post_to_twitter(content):
-    # Authenticate to Twitter (replace with your credentials)
-    auth = tweepy.OAuthHandler("API_KEY", "API_SECRET_KEY")
-    auth.set_access_token("ACCESS_TOKEN", "ACCESS_TOKEN_SECRET")
-    api = tweepy.API(auth)
-    
-    # Create a tweet
-    api.update_status(content)
-    print("Posted to Twitter:", content)
+# Twitter API credentials
+TWITTER_CREDENTIALS = {
+    "API_KEY": "YOUR_API_KEY",
+    "API_SECRET_KEY": "YOUR_API_SECRET_KEY",
+    "ACCESS_TOKEN": "YOUR_ACCESS_TOKEN",
+    "ACCESS_TOKEN_SECRET": "YOUR_ACCESS_TOKEN_SECRET"
+}
 
-def getRandomJoke():
-    # List of categories
-    categories = ["Puns", "Knock-knock", "One-liners", "Sarcastic", "Wordplay", "Wit", "Observational", "Satire", "Food", "Travel", "Animal"] #Shaggy dog stories, Play on expectation
-    # Select random category
-    randomCategory = random.choice(categories)
+JOKE_API_URL = "https://v2.jokeapi.dev/joke/{category}?blacklistFlags={blacklist}"
+CATEGORIES = ["Puns", "Knock-knock", "One-liners", "Sarcastic", "Wordplay", "Wit", "Observational", "Satire", "Food", "Travel", "Animal"]
+BLACKLIST = ["nsfw", "religious", "political", "racist", "sexist", "explicit"]
 
-def blacklistFlags():
-    # List of blacklisted flags
-    blacklist = ["nsfw", "religious", "political", "racist", "sexist", "explicit"]
-    chosenBlackList = []
-    for i in range(1, 3):
-        chosenBlackList.append(
-            blacklist[
-                random.randint(
-                    len(
-                        blacklist))])
+def authenticate_twitter():
+    auth = tweepy.OAuthHandler(TWITTER_CREDENTIALS["API_KEY"], TWITTER_CREDENTIALS["API_SECRET_KEY"])
+    auth.set_access_token(TWITTER_CREDENTIALS["ACCESS_TOKEN"], TWITTER_CREDENTIALS["ACCESS_TOKEN_SECRET"])
+    return tweepy.API(auth)
 
+def post_to_twitter(api, content):
+    try:
+        api.update_status(content)
+        print("Posted to Twitter:", content)
+    except tweepy.TweepError as e:
+        print(f"Error posting to Twitter: {e}")
 
-
-    # API Endpoint Handling
-    url = f"https://v2.jokeapi.dev/joke/{randomCategory}?blacklistFlags=nsfw,religious,political,racist,sexist,explicit"
+def get_random_joke():
+    category = random.choice(CATEGORIES)
+    blacklist_params = ",".join(BLACKLIST)
+    url = JOKE_API_URL.format(category=category, blacklist=blacklist_params)
 
     try:
-        # Fetch joke json (GET)
-        response = rq.get(url)
-        
+        response = requests.get(url)
         response.raise_for_status()
-
         data = response.json()
 
         if data['type'] == 'single':
             joke = data['joke']
         else:
-            joke = f"{data['setup']} \n {data['delivery']}"
-        
-        # Prints out the joke
-        print(f"Category: {randomCategory} \n {joke}")
-    
-    # Dealing with HTTP Errors
-    except rq.exceptions.HTTPError as errh:
-        print (f"HTTP IS A B***CH")
-    
-    # Dealing with Connection Errors
-    except rq.exceptions.ConnectionError as errc:
-        print (f"SO WHAT IF IM NOT NOT CONNECTED TO THE INTERNET")
-    
-    # Dealing with Timeout Issues
-    except rq.exceptions.Timeout as errt:
-        print (f"TIME IS A B***CH")
-    
-    # Dealing with ERRORS!!!
-    except rq.exceptions.RequestException as err:
-        print (f"LIFE IS A B***CH")
+            joke = f"{data['setup']}\n{data['delivery']}"
 
+        return f"Category: {category}\n\n{joke}"
+    except requests.exceptions.RequestException as e:
+        return f"Failed to fetch joke: {str(e)}"
 
-# Schedule posts
-# schedule.every().day.at("08:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("10:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("12:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("14:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("16:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("18:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("20:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("22:00").do(post_to_twitter, content = getRandomJoke())
-# schedule.every().day.at("00:00").do(post_to_twitter, content = getRandomJoke())
+def main():
+    api = authenticate_twitter()
+    while True:
+        joke = get_random_joke()
+        post_to_twitter(api, joke)
+        time.sleep(3600)  # Wait for 1 hour before posting the next joke
 
-while True:
-    print("Bot running...")
-    schedule.run_pending()
-    time.sleep(1)
+if __name__ == "__main__":
+    main()
